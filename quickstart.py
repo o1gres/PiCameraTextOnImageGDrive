@@ -4,7 +4,10 @@
 import datetime
 import sys
 import os
+import urllib
 import string
+import json
+import requests
 
 from picamera import PiCamera
 from picamera import Color
@@ -55,11 +58,18 @@ def main():
 
     #Get information from agrumino
     try:
+	in_file = open(applicationPath+"/jsonLink.txt", "r")
+	link = in_file.read()
+	in_file.close()
+        response = urllib.urlopen(link)
+	dataJson = json.loads(response.read())
+	temperature = dataJson['feeds'][0]['field1']
+	soil = dataJson['feeds'][0]['field5']
 	imageData = str(data)[0:10]
         camera.annotate_text_size = 70
         camera.annotate_foreground = Color('black')
         camera.annotate_background = Color('white')
-#        camera.annotate_text = " "+imageData+" Temp: 22 - Umidita': 80%"
+        camera.annotate_text = " "+imageData+" Temp: "+temperature+ " - Umidita':"+soil+ "% "
     except:
         print ("error getting json information")
 	pass
