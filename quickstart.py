@@ -1,7 +1,13 @@
-from __future__ import print_function
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 import datetime
+import sys
+import os
+import string
 
 from picamera import PiCamera
+from picamera import Color
 from time import sleep
 
 from googleapiclient.discovery import build
@@ -24,10 +30,10 @@ def main():
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    store = file.Storage('token.json')
+    store = file.Storage('/home/pi/Desktop/picamera/token.json')
     creds = store.get()
     if not creds or creds.invalid:
-        flow = client.flow_from_clientsecrets('credentials.json', SCOPES)
+        flow = client.flow_from_clientsecrets('/home/pi/Desktop/picamera/credentials.json', SCOPES)
         creds = tools.run_flow(flow, store)
     service = build('drive', 'v3', http=creds.authorize(Http()))
 
@@ -43,6 +49,18 @@ def main():
     camera.resolution = (2592, 1944)
 
     camera.start_preview()
+
+    #Get information from agrumino
+    try:
+	imageData = str(data)[0:10]
+        camera.annotate_text_size = 70
+        camera.annotate_foreground = Color('black')
+        camera.annotate_background = Color('white')
+#        camera.annotate_text = " "+imageData+" Temp: 22 - Umidita': 80%"
+    except:
+        print ("error getting json information")
+	pass
+
     camera.capture('/home/pi/Desktop/picamera/foto/image' + str(data) + '.jpg')
     camera.stop_preview()
 
@@ -50,7 +68,7 @@ def main():
     #upload to drive
     #service = discovery.build('drive', 'v3', http=http)
     file_metadata = {'name': 'image' + str(data) + '.jpg'}
-    media = MediaFileUpload('foto/image' + str(data) + '.jpg',mimetype='image/jpeg')
+    media = MediaFileUpload('/home/pi/Desktop/picamera/foto/image' + str(data) + '.jpg',mimetype='image/jpeg')
     file_upload = service.files().create(body=file_metadata,media_body=media,fields='id').execute()
 
 
