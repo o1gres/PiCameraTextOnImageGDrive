@@ -30,10 +30,13 @@ def main():
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    store = file.Storage('/home/pi/Desktop/picamera/token.json')
+
+    applicationPath = os.path.dirname(os.path.abspath(__file__))
+
+    store = file.Storage(applicationPath+'/token.json')
     creds = store.get()
     if not creds or creds.invalid:
-        flow = client.flow_from_clientsecrets('/home/pi/Desktop/picamera/credentials.json', SCOPES)
+        flow = client.flow_from_clientsecrets(applicationPath+'/credentials.json', SCOPES)
         creds = tools.run_flow(flow, store)
     service = build('drive', 'v3', http=creds.authorize(Http()))
 
@@ -61,14 +64,14 @@ def main():
         print ("error getting json information")
 	pass
 
-    camera.capture('/home/pi/Desktop/picamera/foto/image' + str(data) + '.jpg')
+    camera.capture(applicationPath+'/foto/image' + str(data) + '.jpg')
     camera.stop_preview()
 
 
     #upload to drive
     #service = discovery.build('drive', 'v3', http=http)
     file_metadata = {'name': 'image' + str(data) + '.jpg'}
-    media = MediaFileUpload('/home/pi/Desktop/picamera/foto/image' + str(data) + '.jpg',mimetype='image/jpeg')
+    media = MediaFileUpload(applicationPath+'/foto/image' + str(data) + '.jpg',mimetype='image/jpeg')
     file_upload = service.files().create(body=file_metadata,media_body=media,fields='id').execute()
 
 
