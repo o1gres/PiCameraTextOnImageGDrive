@@ -78,7 +78,7 @@ def main():
     data = data.replace(":","-")
 
 
-    hour = data[12:14]
+    hour = int(data[12:14])
 
 
     camera = PiCamera()
