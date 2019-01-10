@@ -78,27 +78,8 @@ def main():
     data = data.replace(":","-")
 
 
-    #CONFIGURE LED RING
-    # Process arguments
-#    parser = argparse.ArgumentParser()
-#    parser.add_argument('-c', '--clear', action='store_true', help='clear the display on exit')
-#    args = parser.parse_args()
+    hour = data[12:14]
 
-    # Create NeoPixel object with appropriate configuration.
-#    strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
-    # Intialize the library (must be called once before other functions).
-#    strip.begin()
-
-#    print ('Press Ctrl-C to quit.')
-#    if not args.clear:
-#        print('Use "-c" argument to clear LEDs on exit')
-
-#    try:
-#        colorWipe(strip, Color(255, 255, 255))
-#
-#    except KeyboardInterrupt:
-#        if args.clear:
-#            colorWipe(strip, Color(0,0,0), 10)
 
     camera = PiCamera()
 
@@ -125,21 +106,14 @@ def main():
 	pass
 
 
-
-    os.system('python /home/pi/Desktop/flash/rpi_ws281x/python/examples/flashon.py')
+    if ((hour >= 0 and hour < 10) or (hour >= 18 and hour <= 23)):
+        os.system('python /home/pi/Desktop/flash/rpi_ws281x/python/examples/flashon.py')
 
     camera.capture(applicationPath+'/foto/image' + str(data) + '.jpg')
     camera.stop_preview()
 
+#    if ((hour >= 0 and hour < 10) or (hour >= 18 and hour <= 23)):
     os.system('python /home/pi/Desktop/flash/rpi_ws281x/python/examples/flashoff.py')
-
-
- #   try:
- #       colorWipe(strip, Color(0, 0, 0))
-#
-#    except KeyboardInterrupt:
-#        if args.clear:
-#            colorWipe(strip, Color(0,0,0), 10)
 
 
 
@@ -149,22 +123,6 @@ def main():
     media = MediaFileUpload(applicationPath+'/foto/image' + str(data) + '.jpg',mimetype='image/jpeg')
     file_upload = service.files().create(body=file_metadata,media_body=media,fields='id').execute()
 
-
-
-    #print 'File ID: %s' % file.get('id') 
-
-
-   # Call the Drive v3 API
-#    results = service.files().list(
-#        pageSize=10, fields="nextPageToken, files(id, name)").execute()
-#    items = results.get('files', [])
-#
-#    if not items:
-#        print('No files found.')
-#    else:
-#        print('Files:')
-#        for item in items:
-#            print(u'{0} ({1})'.format(item['name'], item['id']))
 
 if __name__ == '__main__':
     main()
